@@ -1,0 +1,19 @@
+# Test your FastAPI endpoints
+
+### Root endpoint
+GET http://127.0.0.1:8000/
+Accept: application/json
+
+###
+
+### Hello endpoint
+GET http://127.0.0.1:8000/hello
+Accept: application/json
+
+###
+
+### DB test endpoint
+GET http://127.0.0.1:8000/db
+Accept: application/json
+
+###
