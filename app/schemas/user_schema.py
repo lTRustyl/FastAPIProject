@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
-from datetime import datetime, timezone
+from datetime import datetime
+from app.schemas.role_schema import RoleResponse
 import re
 
 class UserBase(BaseModel):
@@ -45,15 +46,19 @@ class UserBase(BaseModel):
             raise ValueError("Invalid birthday date")
         return v_naive
 
+
 class UserCreate(UserBase):
     pass
+
 
 class UserUpdate(UserBase):
     pass
 
+
 class UserResponse(UserBase):
     id: int
     createdAt: datetime
+    roles: list[RoleResponse] = []
 
     class Config:
         from_attributes = True

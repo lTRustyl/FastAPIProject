@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.schemas.user_schema import UserCreate, UserUpdate, UserResponse
-from app.repositories import user_repository
+from app.schemas.role_schema import UserRolesUpdate
+from app.repositories import user_repository, role_repository
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -33,3 +34,20 @@ def delete_user(id: int, db: Session = Depends(get_db)):
     deleted = user_repository.delete(db, id)
     if not deleted:
         raise HTTPException(status_code=404, detail="User not found")
+
+
+@router.put("/{id}/roles", response_model=UserResponse)
+def update_user_roles(id: int, body: UserRolesUpdate, db: Session = Depends(get_db)):
+    unique_role_ids = list(set(body.role_ids))
+    roles = role_repository.get_by_ids(db, unique_role_ids)
+
+    if len(roles) != len(unique_role_ids):
+        found_ids = {role.id for role in roles}
+        missing = [rid for rid in unique_role_ids if rid not in found_ids]
+        raise HTTPException(status_code=404, detail=f"Roles not found: {missing}")
+
+    updated = user_repository.update_roles(db, id, roles)
+    if not updated:
+        raise HTTPException(status_code=404, detail="User not found")
+    return updated
+

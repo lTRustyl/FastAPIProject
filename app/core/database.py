@@ -15,3 +15,15 @@ def get_db():
         yield db
     finally:
         db.close()
+
+def seed_roles():
+    from app.models.role import Role
+    db = SessionLocal()
+    try:
+        default_roles = ["User", "Editor", "Administrator"]
+        for name in default_roles:
+            if not db.query(Role).filter(Role.name == name).first():
+                db.add(Role(name=name))
+        db.commit()
+    finally:
+        db.close()

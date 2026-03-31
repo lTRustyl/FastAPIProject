@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.core.database import Base
+from app.models.role import user_roles, Role
 
 class User(Base):
     __tablename__ = "users"
@@ -13,3 +15,4 @@ class User(Base):
     email = Column(String)
     birthday = Column(DateTime)
     createdAt = Column(DateTime, default=datetime.utcnow)
+    roles = relationship("Role", secondary=user_roles, lazy="selectin")
