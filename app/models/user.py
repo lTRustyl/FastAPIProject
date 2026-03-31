@@ -15,4 +15,6 @@ class User(Base):
     email = Column(String)
     birthday = Column(DateTime)
     createdAt = Column(DateTime, default=datetime.utcnow)
+
     roles = relationship("Role", secondary=user_roles, lazy="selectin")
+    articles = relationship("Article", back_populates="user", lazy="selectin")
