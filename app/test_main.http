@@ -12,47 +12,8 @@ Accept: application/json
 
 ###
 
-### Create user
-POST http://127.0.0.1:8000/user
-Content-Type: application/json
-
-{
-  "username": "Bot",
-  "firstName": "Ben",
-  "lastName": "Tarzan",
-  "phone": "123456789",
-  "email": "ben@test.com",
-  "birthday": "2000-01-01T00:00:00"
-}
-
-###
-
-### Get users
-GET http://127.0.0.1:8000/users
-
-###
-
-### Get user by id
-GET http://127.0.0.1:8000/user/1
-
-###
-
-### Update user
-PUT http://127.0.0.1:8000/user/1
-Content-Type: application/json
-
-{
-  "username": "bot2",
-  "firstName": "Ben",
-  "lastName": "Updated",
-  "phone": "999999999",
-  "email": "ben2@test.com",
-  "birthday": "2000-01-01T00:00:00"
-}
-
-###
-
-### Delete user
-DELETE http://127.0.0.1:8000/user/1
+### DB test endpoint
+GET http://127.0.0.1:8000/db
+Accept: application/json
 
 ###
