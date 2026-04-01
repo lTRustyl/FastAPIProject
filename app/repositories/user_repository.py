@@ -4,6 +4,8 @@ from app.models.role import Role
 from app.schemas.user_schema import UserCreate, UserUpdate
 from app.core.security import hash_password
 
+PROTECTED_FIELDS = {"password", "createdAt", "id"}
+
 def _query_with_roles(db: Session):
     return db.query(User).options(selectinload(User.roles))
 
@@ -41,7 +43,8 @@ def update(db: Session, user_id: int, user: UserUpdate) -> User | None:
     if not db_user:
         return None
     for key, value in user.model_dump().items():
-        setattr(db_user, key, value)
+        if key not in PROTECTED_FIELDS:
+            setattr(db_user, key, value)
     db.commit()
     return get_by_id(db, user_id)
 
