@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(
-    title="FastAPI Project",
+    title="Python Internship Task",
     version="1.0.0",
     lifespan=lifespan,
     )

@@ -4,12 +4,12 @@ from app.schemas.role_schema import RoleResponse
 import re
 
 class UserBase(BaseModel):
-    username: str = Field(min_length=3, max_length=30)
-    firstName: str = Field(min_length=1, max_length=50)
-    lastName: str = Field(min_length=1, max_length=50)
-    phone: str = Field(min_length=10, max_length=15)
-    email: EmailStr
-    birthday: datetime
+    username: str = Field(min_length=3, max_length=30, examples=["john_doe"])
+    firstName: str = Field(min_length=1, max_length=50, examples=["John"])
+    lastName: str = Field(min_length=1, max_length=50, examples=["Doe"])
+    phone: str = Field(min_length=10, max_length=15, examples=["+380991234567"])
+    email: EmailStr = Field(examples=["john.doe@example.com"])
+    birthday: datetime = Field(examples=["1990-05-15T00:00:00"])
 
     @field_validator("username")
     @classmethod
@@ -47,15 +47,44 @@ class UserBase(BaseModel):
         return v_naive
 
 class UserCreate(UserBase):
-    password: str = Field(min_length=6, max_length=100)
+    password: str = Field(min_length=6, max_length=100, examples=["securepassword123"])
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "username": "john_doe",
+                    "firstName": "John",
+                    "lastName": "Doe",
+                    "phone": "+380991234567",
+                    "email": "john.doe@example.com",
+                    "birthday": "1990-05-15T00:00:00",
+                    "password": "securepassword123",
+                }
+            ]
+        }
+    }
+
 
 class UserUpdate(UserBase):
-    pass
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "username": "john_doe",
+                    "firstName": "John",
+                    "lastName": "Smith",
+                    "phone": "+380991234567",
+                    "email": "john.smith@example.com",
+                    "birthday": "1990-05-15T00:00:00",
+                }
+            ]
+        }
+    }
 
 class UserResponse(UserBase):
-    id: int
-    createdAt: datetime
+    id: int = Field(examples=[1])
+    createdAt: datetime = Field(examples=["2024-01-10T12:00:00"])
     roles: list[RoleResponse] = []
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
