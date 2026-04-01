@@ -8,6 +8,7 @@ from app.controllers.auth_controller import router as auth_router
 from app.controllers.user_controller import router as user_router
 from app.controllers.role_controller import router as role_router
 from app.controllers.article_controller import router as article_router
+from app.controllers.health_controller import router as health_router
 
 Base.metadata.create_all(bind=engine)
 seed_roles()
@@ -18,3 +19,4 @@ app.include_router(auth_router)
 app.include_router(user_router)
 app.include_router(role_router)
 app.include_router(article_router)
+app.include_router(health_router)
