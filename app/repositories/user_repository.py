@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session, selectinload
-from app.models.role import Role
 from app.models.user import User
+from app.models.role import Role
 from app.schemas.user_schema import UserCreate, UserUpdate
+from app.core.security import hash_password
 
 def _query_with_roles(db: Session):
     return db.query(User).options(selectinload(User.roles))
@@ -12,9 +13,23 @@ def get_all(db: Session) -> list[User]:
 def get_by_id(db: Session, user_id: int) -> User | None:
     return _query_with_roles(db).filter(User.id == user_id).first()
 
+def get_by_username(db: Session, username: str) -> User | None:
+    return _query_with_roles(db).filter(User.username == username).first()
+
+def search(db: Session, query: str) -> list[User]:
+    q = f"%{query}%"
+    return _query_with_roles(db).filter(
+        User.username.ilike(q) |
+        User.firstName.ilike(q) |
+        User.lastName.ilike(q) |
+        User.email.ilike(q)
+    ).all()
+
 def create(db: Session, user: UserCreate) -> User:
-    db_user = User(**user.model_dump())
+    data = user.model_dump()
+    data["password"] = hash_password(data["password"])
     default_role = db.query(Role).filter(Role.name == "User").first()
+    db_user = User(**data)
     if default_role:
         db_user.roles = [default_role]
     db.add(db_user)

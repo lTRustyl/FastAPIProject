@@ -12,6 +12,13 @@ def get_by_id(db: Session, article_id: int) -> Article | None:
 def get_by_user(db: Session, user_id: int) -> list[Article]:
     return db.query(Article).filter(Article.user_id == user_id).all()
 
+def search(db: Session, query: str) -> list[Article]:
+    q = f"%{query}%"
+    return db.query(Article).filter(
+        Article.title.ilike(q) |
+        Article.description.ilike(q)
+    ).all()
+
 def create(db: Session, article: ArticleCreate) -> Article:
     data = article.model_dump()
     if not data.get("publication_time"):
