@@ -1,14 +1,14 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from datetime import datetime
-from app.schemas.role_schema import RoleResponse
 import re
 
-class UserBase(BaseModel):
+class RegisterRequest(BaseModel):
     username: str = Field(min_length=3, max_length=30)
     firstName: str = Field(min_length=1, max_length=50)
     lastName: str = Field(min_length=1, max_length=50)
     phone: str = Field(min_length=10, max_length=15)
     email: EmailStr
+    password: str = Field(min_length=6, max_length=100)
     birthday: datetime
 
     @field_validator("username")
@@ -34,7 +34,7 @@ class UserBase(BaseModel):
 
     @field_validator("birthday")
     @classmethod
-    def birthday_not_future_and_min_age(cls, v: datetime) -> datetime:
+    def birthday_validation(cls, v: datetime) -> datetime:
         v_naive = v.replace(tzinfo=None) if v.tzinfo else v
         now = datetime.utcnow()
         age = (now - v_naive).days // 365
@@ -46,16 +46,10 @@ class UserBase(BaseModel):
             raise ValueError("Invalid birthday date")
         return v_naive
 
-class UserCreate(UserBase):
-    password: str = Field(min_length=6, max_length=100)
+class LoginRequest(BaseModel):
+    username: str
+    password: str
 
-class UserUpdate(UserBase):
-    pass
-
-class UserResponse(UserBase):
-    id: int
-    createdAt: datetime
-    roles: list[RoleResponse] = []
-
-    class Config:
-        from_attributes = True
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"

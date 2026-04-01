@@ -1,0 +1,14 @@
+[run]
+source = app
+omit =
+    app/models/*
+    app/schemas/*
+    tests/*
+    scripts/*
+    manage.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
+show_missing = true

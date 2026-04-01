@@ -3,3 +3,9 @@ fastapi~=0.135.2
 pydantic[email]~=2.12.5
 psycopg2-binary~=2.9.11
 uvicorn
+python-jose[cryptography]
+bcrypt==4.0.1
+python-multipart
+pytest
+pytest-cov
+httpx
