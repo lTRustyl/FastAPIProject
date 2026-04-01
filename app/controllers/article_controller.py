@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
+from typing import Optional
 from app.core.database import get_db
 from app.core.dependencies import get_current_user
 from app.schemas.article_schema import ArticleCreate, ArticleUpdate, ArticleResponse
@@ -9,16 +10,36 @@ from app.services import article_service
 router = APIRouter(prefix="/articles", tags=["Articles"])
 
 @router.get("", response_model=list[ArticleResponse])
-def get_articles(db: Session = Depends(get_db), _: User = Depends(get_current_user)):
-    return article_service.read_all(db)
+def get_articles(
+        limit: int = Query(10, ge=1, le=100),
+        offset: int = Query(0, ge=0),
+        status: Optional[bool] = Query(None, description="Filter by status: true=published, false=draft"),
+        db: Session = Depends(get_db),
+        _: User = Depends(get_current_user),
+):
+    return article_service.read_all(db, limit=limit, offset=offset, status=status)
 
 @router.get("/search", response_model=list[ArticleResponse])
-def search_articles(q: str, db: Session = Depends(get_db), _: User = Depends(get_current_user)):
-    return article_service.search(db, q)
+def search_articles(
+        q: str = Query(min_length=1),
+        limit: int = Query(10, ge=1, le=100),
+        offset: int = Query(0, ge=0),
+        status: Optional[bool] = Query(None, description="Filter by status: true=published, false=draft"),
+        db: Session = Depends(get_db),
+        _: User = Depends(get_current_user),
+):
+    return article_service.search(db, q, limit=limit, offset=offset, status=status)
 
 @router.get("/user/{user_id}", response_model=list[ArticleResponse])
-def get_articles_by_user(user_id: int, db: Session = Depends(get_db), _: User = Depends(get_current_user)):
-    return article_service.read_by_user(db, user_id)
+def get_articles_by_user(
+        user_id: int,
+        limit: int = Query(10, ge=1, le=100),
+        offset: int = Query(0, ge=0),
+        status: Optional[bool] = Query(None, description="Filter by status: true=published, false=draft"),
+        db: Session = Depends(get_db),
+        _: User = Depends(get_current_user),
+):
+    return article_service.read_by_user(db, user_id, limit=limit, offset=offset, status=status)
 
 @router.get("/{id}", response_model=ArticleResponse)
 def get_article(id: int, db: Session = Depends(get_db), _: User = Depends(get_current_user)):

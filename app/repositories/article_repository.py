@@ -3,21 +3,31 @@ from app.models.article import Article
 from app.schemas.article_schema import ArticleCreate, ArticleUpdate
 from datetime import datetime
 
-def get_all(db: Session) -> list[Article]:
-    return db.query(Article).all()
+def get_all(db: Session, limit: int = 10, offset: int = 0, status: bool | None = None) -> list[Article]:
+    q = db.query(Article)
+    if status is not None:
+        q = q.filter(Article.status == status)
+    return q.offset(offset).limit(limit).all()
 
 def get_by_id(db: Session, article_id: int) -> Article | None:
     return db.query(Article).filter(Article.id == article_id).first()
 
-def get_by_user(db: Session, user_id: int) -> list[Article]:
-    return db.query(Article).filter(Article.user_id == user_id).all()
+def get_by_user(db: Session, user_id: int, limit: int = 10, offset: int = 0, status: bool | None = None) -> list[
+    Article]:
+    q = db.query(Article).filter(Article.user_id == user_id)
+    if status is not None:
+        q = q.filter(Article.status == status)
+    return q.offset(offset).limit(limit).all()
 
-def search(db: Session, query: str) -> list[Article]:
+def search(db: Session, query: str, limit: int = 10, offset: int = 0, status: bool | None = None) -> list[Article]:
     q = f"%{query}%"
-    return db.query(Article).filter(
+    result = db.query(Article).filter(
         Article.title.ilike(q) |
         Article.description.ilike(q)
-    ).all()
+    )
+    if status is not None:
+        result = result.filter(Article.status == status)
+    return result.offset(offset).limit(limit).all()
 
 def create(db: Session, article: ArticleCreate) -> Article:
     data = article.model_dump()

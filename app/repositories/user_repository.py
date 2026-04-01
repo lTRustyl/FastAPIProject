@@ -7,8 +7,8 @@ from app.core.security import hash_password
 def _query_with_roles(db: Session):
     return db.query(User).options(selectinload(User.roles))
 
-def get_all(db: Session) -> list[User]:
-    return _query_with_roles(db).all()
+def get_all(db: Session, limit: int = 10, offset: int = 0) -> list[User]:
+    return _query_with_roles(db).offset(offset).limit(limit).all()
 
 def get_by_id(db: Session, user_id: int) -> User | None:
     return _query_with_roles(db).filter(User.id == user_id).first()
@@ -16,14 +16,14 @@ def get_by_id(db: Session, user_id: int) -> User | None:
 def get_by_username(db: Session, username: str) -> User | None:
     return _query_with_roles(db).filter(User.username == username).first()
 
-def search(db: Session, query: str) -> list[User]:
+def search(db: Session, query: str, limit: int = 10, offset: int = 0) -> list[User]:
     q = f"%{query}%"
     return _query_with_roles(db).filter(
         User.username.ilike(q) |
         User.firstName.ilike(q) |
         User.lastName.ilike(q) |
         User.email.ilike(q)
-    ).all()
+    ).offset(offset).limit(limit).all()
 
 def create(db: Session, user: UserCreate) -> User:
     data = user.model_dump()

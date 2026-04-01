@@ -3,16 +3,13 @@ import os
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-
 def create_user():
     from scripts.create_user import run
     run()
 
-
 def seed():
     from scripts.seed import run
     run()
-
 
 COMMANDS = {
     "create_user": create_user,

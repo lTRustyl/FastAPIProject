@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.dependencies import get_current_user, require_roles
@@ -10,12 +10,23 @@ from app.services import user_service
 router = APIRouter(prefix="/users", tags=["Users"])
 
 @router.get("", response_model=list[UserResponse])
-def get_users(db: Session = Depends(get_db), _: User = Depends(get_current_user)):
-    return user_service.read_all(db)
+def get_users(
+        limit: int = Query(10, ge=1, le=100),
+        offset: int = Query(0, ge=0),
+        db: Session = Depends(get_db),
+        _: User = Depends(get_current_user),
+):
+    return user_service.read_all(db, limit=limit, offset=offset)
 
 @router.get("/search", response_model=list[UserResponse])
-def search_users(q: str, db: Session = Depends(get_db), _: User = Depends(get_current_user)):
-    return user_service.search(db, q)
+def search_users(
+        q: str = Query(min_length=1),
+        limit: int = Query(10, ge=1, le=100),
+        offset: int = Query(0, ge=0),
+        db: Session = Depends(get_db),
+        _: User = Depends(get_current_user),
+):
+    return user_service.search(db, q, limit=limit, offset=offset)
 
 @router.get("/{id}/permissions", response_model=list[RoleResponse])
 def get_user_permissions(id: int, db: Session = Depends(get_db), _: User = Depends(get_current_user)):

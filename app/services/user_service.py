@@ -5,8 +5,8 @@ from app.schemas.user_schema import UserUpdate
 from app.schemas.role_schema import UserRolesUpdate
 from app.repositories import user_repository, role_repository
 
-def read_all(db: Session) -> list[User]:
-    return user_repository.get_all(db)
+def read_all(db: Session, limit: int, offset: int) -> list[User]:
+    return user_repository.get_all(db, limit=limit, offset=offset)
 
 def read_by_id(db: Session, user_id: int) -> User:
     user = user_repository.get_by_id(db, user_id)
@@ -14,8 +14,9 @@ def read_by_id(db: Session, user_id: int) -> User:
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-def search(db: Session, query: str) -> list[User]:
-    return user_repository.search(db, query)
+def search(db: Session, query: str, limit: int, offset: int) -> list[User]:
+    return user_repository.search(db, query, limit=limit, offset=offset)
+
 
 def read_permissions(db: Session, user_id: int) -> list:
     user = read_by_id(db, user_id)

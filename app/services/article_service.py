@@ -8,8 +8,8 @@ from app.repositories import article_repository, user_repository
 def _get_user_role_names(user: User) -> set:
     return {r.name for r in user.roles}
 
-def read_all(db: Session) -> list[Article]:
-    return article_repository.get_all(db)
+def read_all(db: Session, limit: int, offset: int, status: bool | None) -> list[Article]:
+    return article_repository.get_all(db, limit=limit, offset=offset, status=status)
 
 def read_by_id(db: Session, article_id: int) -> Article:
     article = article_repository.get_by_id(db, article_id)
@@ -17,13 +17,13 @@ def read_by_id(db: Session, article_id: int) -> Article:
         raise HTTPException(status_code=404, detail="Article not found")
     return article
 
-def read_by_user(db: Session, user_id: int) -> list[Article]:
+def read_by_user(db: Session, user_id: int, limit: int, offset: int, status: bool | None) -> list[Article]:
     if not user_repository.get_by_id(db, user_id):
         raise HTTPException(status_code=404, detail="User not found")
-    return article_repository.get_by_user(db, user_id)
+    return article_repository.get_by_user(db, user_id, limit=limit, offset=offset, status=status)
 
-def search(db: Session, query: str) -> list[Article]:
-    return article_repository.search(db, query)
+def search(db: Session, query: str, limit: int, offset: int, status: bool | None) -> list[Article]:
+    return article_repository.search(db, query, limit=limit, offset=offset, status=status)
 
 def create(db: Session, data: ArticleCreate, current_user: User) -> Article:
     roles = _get_user_role_names(current_user)
