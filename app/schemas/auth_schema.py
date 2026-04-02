@@ -3,13 +3,13 @@ from datetime import datetime
 import re
 
 class RegisterRequest(BaseModel):
-    username: str = Field(min_length=3, max_length=30)
-    firstName: str = Field(min_length=1, max_length=50)
-    lastName: str = Field(min_length=1, max_length=50)
-    phone: str = Field(min_length=10, max_length=15)
-    email: EmailStr
-    password: str = Field(min_length=6, max_length=100)
-    birthday: datetime
+    username: str = Field(min_length=3, max_length=30, examples=["john_doe"])
+    firstName: str = Field(min_length=1, max_length=50, examples=["John"])
+    lastName: str = Field(min_length=1, max_length=50, examples=["Doe"])
+    phone: str = Field(min_length=10, max_length=15, examples=["+380991234567"])
+    email: EmailStr = Field(examples=["john.doe@example.com"])
+    password: str = Field(min_length=6, max_length=100, examples=["securepassword123"])
+    birthday: datetime = Field(examples=["1990-05-15T00:00:00"])
 
     @field_validator("username")
     @classmethod
@@ -47,9 +47,17 @@ class RegisterRequest(BaseModel):
         return v_naive
 
 class LoginRequest(BaseModel):
-    username: str
-    password: str
+    username: str = Field(examples=["admin"])
+    password: str = Field(examples=["admin123"])
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {"username": "admin", "password": "admin123"}
+            ]
+        }
+    }
 
 class TokenResponse(BaseModel):
-    access_token: str
-    token_type: str = "bearer"
+    access_token: str = Field(examples=["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."])
+    token_type: str = Field(default="bearer", examples=["bearer"])
